@@ -1,0 +1,15 @@
+{
+  "name": "BizzBot",
+  "short_name": "BizzBot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050507",
+  "theme_color": "#050507",
+  "icons": [
+    {
+      "src": "assets/Bizzbot_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
