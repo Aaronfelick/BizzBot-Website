@@ -2949,3 +2949,52 @@ body:not(.on-home) .page { display:block; opacity:1; transform:none; }
   .why-screen-fit .feature-card p { font-size:.76rem; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 }
 @media (max-width: 900px) { .pricing-card .plan-features { min-height:0; } }
+
+/* ── OPERATIONS AI BAND (pricing) ───────────────────────────────── */
+.ops-band {
+  margin-top: 2.25rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  padding: 2rem 2.25rem;
+  background:
+    radial-gradient(120% 160% at 100% 0%, var(--glow) 0%, transparent 58%),
+    var(--panel);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+}
+.ops-band-tag {
+  display: inline-block;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: .3rem .7rem;
+  margin-bottom: .9rem;
+}
+.ops-band h3 { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.15; margin: 0 0 .6rem; color: var(--ink); }
+.ops-band h3 em { font-style: normal; color: var(--accent-2); }
+.ops-band > div > p { color: var(--muted); font-size: .92rem; line-height: 1.6; margin: 0 0 1rem; }
+.ops-band ul { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: .45rem; }
+.ops-band ul li { color: var(--muted); font-size: .86rem; padding-left: 1.15rem; position: relative; }
+.ops-band ul li::before { content: "→"; position: absolute; left: 0; color: var(--accent-2); }
+.ops-band-aside {
+  border-left: 1px solid var(--line);
+  padding-left: 2rem;
+}
+.ops-band-price { font-family: var(--font-display); font-size: 1.45rem; color: var(--ink); margin-bottom: .35rem; }
+.ops-band-note { color: var(--faint); font-size: .78rem; line-height: 1.55; margin-bottom: 1.1rem; }
+@media (max-width: 900px) {
+  .ops-band { grid-template-columns: 1fr; padding: 1.6rem 1.4rem; gap: 1.4rem; }
+  .ops-band-aside { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 1.4rem; }
+}
+
+/* Keep wide comparison tables inside their own scroller so the page
+   itself never scrolls horizontally on small screens. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
