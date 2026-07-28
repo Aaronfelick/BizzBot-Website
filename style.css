@@ -3097,3 +3097,27 @@ body { letter-spacing: 0.01em; }
     max-height: calc(100svh - 160px);
   }
 }
+
+/* ── MOBILE HERO · CTA ROW PINNED TO THE BOTTOM ─────────────────
+   The headline stays centred in the viewport; the buttons drop to
+   the bottom edge instead of sitting directly beneath it.
+
+   The CTA row is taken out of flow so it no longer affects where the
+   headline centres. Its containing block resolves to .intro-sticky
+   (the nearest positioned ancestor), so .intro-inner's overflow:hidden
+   does not clip it. Horizontal centring uses left/right insets rather
+   than a transform, because the intro animation owns `transform` and
+   would overwrite it. */
+@media (max-width: 768px) {
+  .intro-actions {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: max(env(safe-area-inset-bottom, 0px) + 18px, clamp(26px, 5.5vh, 52px));
+    width: auto;
+    margin-top: 0;
+    justify-content: center;
+  }
+  /* The headline now centres on its own. */
+  .intro-inner { justify-content: center; }
+}
