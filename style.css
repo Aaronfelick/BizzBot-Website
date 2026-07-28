@@ -2998,3 +2998,35 @@ body:not(.on-home) .page { display:block; opacity:1; transform:none; }
 /* Keep wide comparison tables inside their own scroller so the page
    itself never scrolls horizontally on small screens. */
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+
+/* ── CUSTOM TYPE EXCEPTIONS ─────────────────────────────────────
+   Nohemi is the site face everywhere. These two are deliberate
+   exceptions and must not follow it:
+     - the hero headline, kept on the grotesque it was designed against
+     - the oversized footer BIZZBOT wordmark, set in Bodoni (declared
+       further up with !important, listed here for the record)
+   ──────────────────────────────────────────────────────────────── */
+.intro-title,
+.intro-title * {
+  /* Beats the global var(--font-hero) !important rule further up.
+     Must stay after it in source order. */
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* ── CHAPTER INDEX PARITY ───────────────────────────────────────
+   The review chapter number rendered far larger than every other
+   chapter index. Bring it back in line so 05-08 read as one series. */
+.review-index { font-size: clamp(4rem, 8vw, 7rem); line-height: 0.9; -webkit-text-stroke-width: 1.5px; }
+@media (max-width: 900px) {
+  .review-index { font-size: clamp(3.2rem, 13vw, 5rem); -webkit-text-stroke-width: 1.2px; }
+}
+
+/* ── DISCOUNTED SETUP FEE ───────────────────────────────────────
+   The struck-through original should read as context, not compete
+   with the price that actually applies. */
+.card-setup-fee s, .setup-fee-note s {
+  color: var(--faint);
+  text-decoration-color: var(--faint);
+  margin-right: 0.15em;
+  opacity: 0.75;
+}
