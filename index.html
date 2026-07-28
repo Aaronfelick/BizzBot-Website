@@ -24,13 +24,14 @@
 <meta content="https://bizzbot.co/assets/bizzbot-og.png" name="twitter:image"/>
 <link href="assets/Bizzbot_logo.png" rel="icon" type="image/png"/>
 <link href="site.webmanifest" rel="manifest"/>
+<link as="image" fetchpriority="high" href="assets/Bizzbot_logo.png" rel="preload"/>
 <link as="image" fetchpriority="high" href="frames/frame_0001.webp" rel="preload"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Regular.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Medium.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-SemiBold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Bold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-ExtraBold.woff2" rel="preload" type="font/woff2"/>
-<link href="style.css?v=20260725-v10" rel="stylesheet"/>
+<link href="style.css?v=20260728-v11" rel="stylesheet"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -126,7 +127,7 @@
 </head>
 <body class="on-home is-preloading">
 <div aria-label="Loading BizzBot experience" class="brand-preloader" id="brandPreloader" role="status">
-<img alt="BizzBot" fetchpriority="high" src="assets/bizzbot-loader.png"/>
+<img alt="BizzBot" fetchpriority="high" src="assets/Bizzbot_logo.png"/>
 </div>
 <div aria-hidden="true" class="page-noise"></div>
 <nav id="mainNav">
@@ -674,6 +675,89 @@ document.addEventListener("DOMContentLoaded", () => {
   Promise.all(preload).then(revealSite);
   // Prevent a damaged/missing frame from trapping the visitor forever.
   setTimeout(revealSite, 20000);
+})();
+</script>
+<script>
+(function () {
+  // The CSS above sizes the intro headline proportionally; this measures the real
+  // rendered lines and trims the size if the font, the browser zoom level or a
+  // short viewport would push them past the hero column.
+  const title = document.querySelector('.intro-title');
+  const inner = document.querySelector('.intro-inner');
+  if (!title || !inner) return;
+  const actions = document.querySelector('.intro-actions');
+  const lines = Array.from(title.children);
+  const range = document.createRange();
+
+  function widestLine() {
+    let widest = 0;
+    for (const line of lines) {
+      range.selectNodeContents(line);
+      widest = Math.max(widest, range.getBoundingClientRect().width);
+    }
+    return widest;
+  }
+
+  // Vertical space the headline may occupy: the intro column's own cap, the room
+  // its sticky parent leaves, minus whatever the CTA row needs.
+  function availableHeight() {
+    const capped = parseFloat(getComputedStyle(inner).maxHeight);
+    const stage = inner.parentElement;
+    let room = isFinite(capped) && capped > 0 ? capped : Infinity;
+    if (stage) {
+      const cs = getComputedStyle(stage);
+      const stageRoom = stage.clientHeight -
+        (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+      if (stageRoom > 0) room = Math.min(room, stageRoom);
+    }
+    if (actions) {
+      room -= actions.offsetHeight + (parseFloat(getComputedStyle(actions).marginTop) || 0);
+    }
+    return room;
+  }
+
+  function fit() {
+    title.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(title).fontSize);
+    if (!base) return;
+
+    // 1. Width — keep the longest line inside the column.
+    const lineEm = widestLine() / base;
+    let size = lineEm > 0 ? Math.min(base, (inner.clientWidth - 2) / lineEm) : base;
+    title.style.fontSize = size + 'px';
+
+    // 2. Height — with the lines no longer wrapping, scale to the room left.
+    const room = availableHeight();
+    const used = title.offsetHeight;
+    if (room > 0 && used > room) size *= room / used;
+
+    title.style.fontSize = Math.max(20, size) + 'px';
+  }
+
+  let queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; fit(); });
+  }
+
+  fit();
+  addEventListener('resize', schedule);
+  addEventListener('orientationchange', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Catches width changes the resize event misses, such as the page scrollbar
+  // appearing once the rest of the page loads. Width only, so resizing the
+  // headline can't retrigger the observer.
+  if (window.ResizeObserver) {
+    let lastWidth = -1;
+    new ResizeObserver(() => {
+      const width = Math.round(inner.clientWidth);
+      if (width === lastWidth) return;
+      lastWidth = width;
+      schedule();
+    }).observe(inner);
+  }
 })();
 </script>
 <script src="scroll-sequence.js?v=20260725-v10-v93-intro"></script>

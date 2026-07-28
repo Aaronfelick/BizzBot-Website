@@ -1637,7 +1637,9 @@ body.no-3d .explode-progress { display: none; }
   top: 0;
   width: 100%;
   height: 100svh;
-  min-height: 620px;
+  /* Never taller than the viewport, or the CTA row drops below the fold on
+     short screens and at high browser zoom. */
+  min-height: min(620px, 100svh);
   padding: clamp(86px, 11vh, 124px) clamp(1.25rem, 4vw, 4rem) clamp(16px, 2.5vh, 28px);
   display: flex;
   flex-direction: column;
@@ -1703,6 +1705,7 @@ body.no-3d .explode-progress { display: none; }
 .intro-inner {
   width: min(1480px, 100%);
   max-height: calc(100svh - 68px - clamp(16px, 2.5vh, 28px) - 14px);
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1717,7 +1720,14 @@ body.no-3d .explode-progress { display: none; }
   flex-direction: column;
   align-items: center;
   font-family: var(--font-hero);
-  font-size: clamp(3.8rem, min(15vw, 20vh), 8.5rem);
+  /* The headline is sized from whichever runs out first: the width of the hero
+     column (the longest line measures ~8.5em), the height left for four lines
+     plus the CTA row, or the design cap. Keeps the same proportions at any
+     resolution or browser zoom level. */
+  --intro-width-fit: 10.4vw;
+  --intro-height-fit: calc((100svh - 190px) / 3.8);
+  --intro-max: 8.5rem;
+  font-size: min(var(--intro-width-fit), var(--intro-height-fit), var(--intro-max));
   font-weight: 800;
   line-height: 0.86;
   letter-spacing: -0.055em;
@@ -1749,6 +1759,12 @@ body.no-3d .explode-progress { display: none; }
 }
 
 .intro-title .accent-dot { color: var(--accent-2); }
+
+/* Prefer the hero column's own width over the viewport so the headline stays
+   inside the gutters no matter how wide the padding resolves. */
+@supports (font-size: 1cqw) {
+  .intro-title { --intro-width-fit: 11.4cqw; }
+}
 
 .intro-actions {
   margin-top: clamp(2.5rem, 6vh, 4rem);
@@ -1833,7 +1849,7 @@ body.no-3d .explode-progress { display: none; }
   }
 
   .intro-sticky {
-    min-height: 560px;
+    min-height: min(560px, 100svh);
     padding: 84px 1rem 76px;
   }
 
@@ -1842,7 +1858,8 @@ body.no-3d .explode-progress { display: none; }
   }
 
   .intro-title {
-    font-size: clamp(3.4rem, min(17vw, 14.5vh), 6.4rem);
+    --intro-height-fit: calc((100svh - 175px) / 3.7);
+    --intro-max: 6.4rem;
     line-height: 0.82;
     letter-spacing: -0.055em;
   }
@@ -1865,7 +1882,7 @@ body.no-3d .explode-progress { display: none; }
 
 @media (max-width: 420px) {
   .intro-title {
-    font-size: clamp(2.75rem, min(15vw, 12.7vh), 4.6rem);
+    --intro-max: 4.6rem;
   }
 
   .intro-actions { gap: 0.55rem; }
@@ -2391,7 +2408,14 @@ textarea::placeholder,
 html, body, button, input, textarea, select { font-family: 'Nohemi', Arial, sans-serif !important; }
 body.is-preloading { overflow: hidden; }
 .brand-preloader { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; background: #050507; opacity: 1; transition: opacity .55s ease, visibility .55s ease; }
-.brand-preloader img { width: min(560px, 72vw); height: auto; object-fit: contain; filter: none; }
+.brand-preloader img { width: min(148px, 34vw); height: auto; aspect-ratio: 1; object-fit: contain; background: transparent; filter: drop-shadow(0 0 42px rgba(93, 109, 255, 0.34)); animation: brandPreloaderPulse 1.7s ease-in-out infinite; }
+@keyframes brandPreloaderPulse {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.055); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-preloader img { animation: none; opacity: 1; }
+}
 .brand-preloader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
 .sequence-loader { display: none !important; }
 .footer-mega { font-family: 'Bodoni 72', Didot, 'Times New Roman', Georgia, serif !important; letter-spacing: -0.055em; }
