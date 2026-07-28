@@ -3060,3 +3060,40 @@ body { letter-spacing: 0.01em; }
    hover/active indicator. Restore it — the markup is identical, it
    was only ever hidden by CSS. */
 .seo-static .nav-links a::after { display: block; }
+
+/* ── TEAM CARD EMAIL ────────────────────────────────────────────
+   Sits between the role and the bio. Muted until hover so it reads
+   as a detail rather than competing with the name. */
+.team-card .team-email {
+  display: inline-block;
+  margin: -0.35rem 0 0.85rem;
+  font-size: 12.5px;
+  color: var(--faint);
+  text-decoration: none;
+  letter-spacing: 0.012em;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.team-card .team-email:hover,
+.team-card .team-email:focus-visible {
+  color: var(--accent-2);
+  border-bottom-color: rgba(142, 184, 255, 0.5);
+}
+
+/* ── MOBILE HERO CENTRING ───────────────────────────────────────
+   On desktop the headline is intentionally bottom-weighted, sitting
+   just above the scroll cue (justify-content: flex-end). On a phone
+   that leaves a large void up top and pushes the headline and CTAs
+   against the bottom edge. Centre the whole group instead, with
+   balanced padding so it lands in the true middle of the screen. */
+@media (max-width: 768px) {
+  .intro-sticky {
+    justify-content: center;
+    padding-top: clamp(80px, 12vh, 104px);
+    padding-bottom: clamp(80px, 12vh, 104px);
+  }
+  .intro-inner {
+    justify-content: center;
+    max-height: calc(100svh - 160px);
+  }
+}
