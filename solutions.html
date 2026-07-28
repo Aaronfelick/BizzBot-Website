@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en-AE"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Best AI Chatbot &amp; Assistant Solutions in the UAE | BizzBot</title><meta name="description" content="Looking for the best AI chatbot or AI assistant in the UAE? Explore BizzBot solutions for support, leads, real estate, e-commerce, sales and frontline Operations AI."><meta name="robots" content="index, follow, max-image-preview:large"><link rel="canonical" href="https://bizzbot.co/solutions.html"><meta property="og:type" content="website"><meta property="og:site_name" content="BizzBot"><meta property="og:title" content="Best AI Chatbot &amp; Assistant Solutions in the UAE | BizzBot"><meta property="og:description" content="Custom AI chatbot solutions for support, leads, sales, property and e-commerce."><meta property="og:image" content="https://bizzbot.co/assets/bizzbot-og.png"><link rel="icon" href="assets/Bizzbot_logo.png"><link rel="stylesheet" href="style.css?v=20260728-v15"></head><body class="seo-static"><div class="page-noise" aria-hidden="true"></div>
+<!DOCTYPE html><html lang="en-AE"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Best AI Chatbot &amp; Assistant Solutions in the UAE | BizzBot</title><meta name="description" content="Looking for the best AI chatbot or AI assistant in the UAE? Explore BizzBot solutions for support, leads, real estate, e-commerce, sales and frontline Operations AI."><meta name="robots" content="index, follow, max-image-preview:large"><link rel="canonical" href="https://bizzbot.co/solutions.html"><meta property="og:type" content="website"><meta property="og:site_name" content="BizzBot"><meta property="og:title" content="Best AI Chatbot &amp; Assistant Solutions in the UAE | BizzBot"><meta property="og:description" content="Custom AI chatbot solutions for support, leads, sales, property and e-commerce."><meta property="og:image" content="https://bizzbot.co/assets/bizzbot-og.png"><link rel="icon" href="assets/Bizzbot_logo.png"><link rel="stylesheet" href="style.css?v=20260728-v16"></head><body class="seo-static is-preloading">
+<div aria-label="Loading BizzBot" class="brand-preloader" id="brandPreloader" role="status"><img alt="BizzBot" fetchpriority="high" src="assets/Bizzbot_logo.png"/></div>
+<div class="page-noise" aria-hidden="true"></div>
 <nav id="mainNav" class="scrolled">
   <a class="nav-logo" href="index.html" aria-label="BizzBot home">Bizz<span>Bot</span></a>
   <div class="nav-right-container">
@@ -37,4 +39,29 @@
     a.classList.toggle('active', href === path);
   });
 })();
-</script></body></html>
+</script><script>
+(function () {
+  /* Brief brand screen on every page load. The homepage runs its own
+     version gated on the film frames; this one just needs the logo and
+     the fonts, with a floor so it does not flash and a ceiling so a slow
+     asset can never trap the visitor. */
+  var MIN_MS = 420, MAX_MS = 3000, start = Date.now(), done = false;
+  function reveal() {
+    if (done) return; done = true;
+    document.body.classList.remove('is-preloading');
+    var el = document.getElementById('brandPreloader');
+    if (el) { el.classList.add('is-done'); setTimeout(function () { el.remove(); }, 650); }
+  }
+  function finish() {
+    var wait = Math.max(0, MIN_MS - (Date.now() - start));
+    setTimeout(reveal, wait);
+  }
+  var ready = [new Promise(function (r) {
+    if (document.readyState === 'complete') r(); else window.addEventListener('load', r, {once: true});
+  })];
+  if (document.fonts && document.fonts.ready) ready.push(document.fonts.ready);
+  Promise.all(ready).then(finish).catch(finish);
+  setTimeout(reveal, MAX_MS);
+})();
+</script>
+</body></html>

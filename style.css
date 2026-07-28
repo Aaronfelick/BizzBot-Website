@@ -2472,7 +2472,7 @@ body.is-preloading { overflow: hidden; }
 .seo-breadcrumbs a { color: var(--accent-2); text-decoration: none; }
 .seo-static footer { margin-top: 0; }
 .seo-static .nav-links a { text-decoration: none; }
-.seo-static .nav-links a::after { display: none; }
+
 .seo-static .mobile-menu a { text-decoration: none; }
 
 @media (max-width: 768px) {
@@ -3030,3 +3030,33 @@ body:not(.on-home) .page { display:block; opacity:1; transform:none; }
   margin-right: 0.15em;
   opacity: 0.75;
 }
+
+/* ── TYPE TRACKING FOR NOHEMI ───────────────────────────────────
+   The tracking below was tuned while the site was falling back to
+   Arial, which is a noticeably wider face. Nohemi is a tight
+   geometric sans, so the same negative values read as cramped now
+   that the real font is loading. These relax it — headings keep a
+   little negative tracking so large sizes still hold together,
+   body copy gets a touch of positive.
+
+   Deliberately NOT touched: .intro-title (still Arial) and
+   .footer-mega (Bodoni). Both are custom by design.
+   ──────────────────────────────────────────────────────────────── */
+body { letter-spacing: 0.01em; }
+
+.seo-hero h1        { letter-spacing: -0.015em; }
+.seo-copy-grid h2   { letter-spacing: -0.008em; }
+.section-title      { letter-spacing: 0.002em; }
+.page-title         { letter-spacing: 0; }
+.cta-band h2        { letter-spacing: 0.002em; }
+.film-hero-title    { letter-spacing: -0.012em; }
+.hero-mega          { letter-spacing: -0.008em; }
+.seo-feature-card h3, .feature-card h3, .plan-name { letter-spacing: 0.008em; }
+.seo-lead, .section-sub, .seo-prose p { letter-spacing: 0.012em; }
+
+/* ── NAV UNDERLINE ON STATIC PAGES ──────────────────────────────
+   The animated gradient underline was switched off for .seo-static
+   pages, so Operations AI, Solutions and the landing pages had no
+   hover/active indicator. Restore it — the markup is identical, it
+   was only ever hidden by CSS. */
+.seo-static .nav-links a::after { display: block; }

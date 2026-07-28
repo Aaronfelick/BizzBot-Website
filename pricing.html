@@ -30,7 +30,7 @@
 <link as="font" crossorigin="" href="fonts/Nohemi-SemiBold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Bold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-ExtraBold.woff2" rel="preload" type="font/woff2"/>
-<link href="style.css?v=20260728-v15" rel="stylesheet"/>
+<link href="style.css?v=20260728-v16" rel="stylesheet"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -124,7 +124,9 @@
 }
   </script>
 </head>
-<body class="">
+<body class=" is-preloading">
+<div aria-label="Loading BizzBot" class="brand-preloader" id="brandPreloader" role="status"><img alt="BizzBot" fetchpriority="high" src="assets/Bizzbot_logo.png"/></div>
+
 
 <div aria-hidden="true" class="page-noise"></div>
 <nav id="mainNav">
@@ -497,4 +499,29 @@ document.addEventListener("DOMContentLoaded", () => {
     a.classList.toggle('active', href === path);
   });
 })();
-</script></body></html>
+</script><script>
+(function () {
+  /* Brief brand screen on every page load. The homepage runs its own
+     version gated on the film frames; this one just needs the logo and
+     the fonts, with a floor so it does not flash and a ceiling so a slow
+     asset can never trap the visitor. */
+  var MIN_MS = 420, MAX_MS = 3000, start = Date.now(), done = false;
+  function reveal() {
+    if (done) return; done = true;
+    document.body.classList.remove('is-preloading');
+    var el = document.getElementById('brandPreloader');
+    if (el) { el.classList.add('is-done'); setTimeout(function () { el.remove(); }, 650); }
+  }
+  function finish() {
+    var wait = Math.max(0, MIN_MS - (Date.now() - start));
+    setTimeout(reveal, wait);
+  }
+  var ready = [new Promise(function (r) {
+    if (document.readyState === 'complete') r(); else window.addEventListener('load', r, {once: true});
+  })];
+  if (document.fonts && document.fonts.ready) ready.push(document.fonts.ready);
+  Promise.all(ready).then(finish).catch(finish);
+  setTimeout(reveal, MAX_MS);
+})();
+</script>
+</body></html>

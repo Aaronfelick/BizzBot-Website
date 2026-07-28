@@ -10,10 +10,12 @@
   <meta property="og:type" content="website"><meta property="og:site_name" content="BizzBot"><meta property="og:title" content="Real Estate Lead Generation Chatbot in UAE | BizzBot"><meta property="og:description" content="AI real estate chatbot for UAE agencies and developers. Qualify property leads, answer listing questions and capture viewing requests 24/7."><meta property="og:url" content="https://bizzbot.co/real-estate-chatbot.html"><meta property="og:image" content="https://bizzbot.co/assets/bizzbot-og.png">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Real Estate Lead Generation Chatbot in UAE | BizzBot"><meta name="twitter:description" content="AI real estate chatbot for UAE agencies and developers. Qualify property leads, answer listing questions and capture viewing requests 24/7."><meta name="twitter:image" content="https://bizzbot.co/assets/bizzbot-og.png">
   <link rel="icon" href="assets/Bizzbot_logo.png" type="image/png">
-  <link rel="stylesheet" href="style.css?v=20260728-v15">
+  <link rel="stylesheet" href="style.css?v=20260728-v16">
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Service", "name": "Real Estate Lead Generation Chatbot in UAE", "url": "https://bizzbot.co/real-estate-chatbot.html", "description": "AI real estate chatbot for UAE agencies and developers. Qualify property leads, answer listing questions and capture viewing requests 24/7.", "provider": {"@type": "Organization", "name": "BizzBot", "url": "https://bizzbot.co/"}, "areaServed": {"@type": "Country", "name": "United Arab Emirates"}}</script>
 </head>
-<body class="seo-static">
+<body class="seo-static is-preloading">
+<div aria-label="Loading BizzBot" class="brand-preloader" id="brandPreloader" role="status"><img alt="BizzBot" fetchpriority="high" src="assets/Bizzbot_logo.png"/></div>
+
 <div class="page-noise" aria-hidden="true"></div>
 
 <nav id="mainNav" class="scrolled">
@@ -73,6 +75,31 @@
     var href = (a.getAttribute('href') || '').toLowerCase();
     a.classList.toggle('active', href === path);
   });
+})();
+</script>
+<script>
+(function () {
+  /* Brief brand screen on every page load. The homepage runs its own
+     version gated on the film frames; this one just needs the logo and
+     the fonts, with a floor so it does not flash and a ceiling so a slow
+     asset can never trap the visitor. */
+  var MIN_MS = 420, MAX_MS = 3000, start = Date.now(), done = false;
+  function reveal() {
+    if (done) return; done = true;
+    document.body.classList.remove('is-preloading');
+    var el = document.getElementById('brandPreloader');
+    if (el) { el.classList.add('is-done'); setTimeout(function () { el.remove(); }, 650); }
+  }
+  function finish() {
+    var wait = Math.max(0, MIN_MS - (Date.now() - start));
+    setTimeout(reveal, wait);
+  }
+  var ready = [new Promise(function (r) {
+    if (document.readyState === 'complete') r(); else window.addEventListener('load', r, {once: true});
+  })];
+  if (document.fonts && document.fonts.ready) ready.push(document.fonts.ready);
+  Promise.all(ready).then(finish).catch(finish);
+  setTimeout(reveal, MAX_MS);
 })();
 </script>
 </body>
