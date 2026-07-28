@@ -3121,3 +3121,179 @@ body { letter-spacing: 0.01em; }
   /* The headline now centres on its own. */
   .intro-inner { justify-content: center; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   NAVIGATION DROPDOWNS
+   Two groups - Chatbots and Company - so the bar stays at five slots
+   while everything underneath stays reachable.
+   ══════════════════════════════════════════════════════════════════ */
+.nav-dd { position: relative; }
+
+.nav-dd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--muted);
+  letter-spacing: 0.012em;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-dd-btn::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -6px;
+  width: 100%; height: 1.5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.nav-dd:hover .nav-dd-btn::after,
+.nav-dd.is-open .nav-dd-btn::after,
+.nav-dd-btn.active::after { transform: scaleX(1); }
+.nav-dd:hover .nav-dd-btn,
+.nav-dd.is-open .nav-dd-btn,
+.nav-dd-btn.active { color: var(--ink); }
+
+.nav-dd-caret {
+  width: 7px; height: 7px;
+  border-right: 1.4px solid currentColor;
+  border-bottom: 1.4px solid currentColor;
+  transform: rotate(45deg) translate(-1px, -1px);
+  transition: transform 0.25s ease;
+  opacity: 0.75;
+}
+.nav-dd.is-open .nav-dd-caret { transform: rotate(-135deg) translate(-2px, -2px); }
+
+.nav-dd-panel {
+  position: absolute;
+  /* Nav is 68px tall and the trigger sits mid-bar, so this clears the
+     bottom edge instead of opening inside it. */
+  top: calc(100% + 34px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  min-width: 220px;
+  padding: 0.85rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: rgba(10, 12, 20, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  /* visibility is a discrete property - giving it a duration leaves the
+     panel stuck hidden. Flip it instantly on open, and delay it on close
+     until the fade has finished. */
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+  z-index: 120;
+}
+/* Bridges the gap between trigger and panel so the pointer can travel
+   without the panel closing underneath it. */
+.nav-dd-panel::before {
+  content: '';
+  position: absolute;
+  top: -34px; left: 0; right: 0; height: 34px;
+}
+.nav-dd.is-open .nav-dd-panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s;
+}
+.nav-dd-panel a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.nav-dd-panel a::after { display: none; }
+.nav-dd-panel a:hover,
+.nav-dd-panel a:focus-visible { background: rgba(93, 109, 255, 0.12); color: var(--ink); }
+.nav-dd-panel a.active { color: var(--accent-2); background: rgba(93, 109, 255, 0.08); }
+
+.nav-dd-label {
+  padding: 0.55rem 0.75rem 0.3rem;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.nav-dd-label + a { margin-top: -2px; }
+.nav-dd-panel .nav-dd-label:not(:first-child) {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+}
+
+/* ── mobile accordion inside the hamburger ───────────────────────── */
+.m-acc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.m-acc-btn.active { color: var(--accent-2); }
+.m-acc-caret {
+  width: 7px; height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+  opacity: 0.7;
+  margin-right: 4px;
+}
+.m-acc-btn[aria-expanded="true"] .m-acc-caret { transform: rotate(-135deg); }
+
+.m-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+  overflow: hidden;
+}
+.m-acc-panel > div { min-height: 0; overflow: hidden; }
+.m-acc-panel.is-open { grid-template-rows: 1fr; }
+.m-acc-panel a {
+  display: block;
+  padding: 0.5rem 0 0.5rem 0.9rem;
+  font-size: 14px;
+  color: var(--muted);
+  border-left: 1px solid var(--line);
+}
+.m-acc-panel a.active { color: var(--accent-2); border-left-color: var(--accent-2); }
+.m-acc-label {
+  display: block;
+  padding: 0.7rem 0 0.25rem 0.9rem;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.mobile-menu { max-height: calc(100svh - 68px); overflow-y: auto; }
+
+@media (max-width: 860px) {
+  .nav-dd-panel { display: none; }
+}
