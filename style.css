@@ -2407,7 +2407,7 @@ textarea::placeholder,
 /* BizzBot V9 brand + high-quality preload overrides */
 html, body, button, input, textarea, select { font-family: 'Nohemi', Arial, sans-serif !important; }
 body.is-preloading { overflow: hidden; }
-.brand-preloader { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; background: #050507; opacity: 1; transition: opacity .55s ease, visibility .55s ease; }
+.brand-preloader { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; background: #050507; opacity: 1; transition: opacity .32s ease, visibility .32s ease; }
 .brand-preloader img { width: min(148px, 34vw); height: auto; aspect-ratio: 1; object-fit: contain; background: transparent; filter: drop-shadow(0 0 42px rgba(93, 109, 255, 0.34)); animation: brandPreloaderPulse 1.7s ease-in-out infinite; }
 @keyframes brandPreloaderPulse {
   0%, 100% { transform: scale(1); opacity: 0.92; }
@@ -3059,7 +3059,11 @@ body { letter-spacing: 0.01em; }
    pages, so Operations AI, Solutions and the landing pages had no
    hover/active indicator. Restore it — the markup is identical, it
    was only ever hidden by CSS. */
+   Dropdown panel links are excluded: inside a panel the underline reads as
+   a stray blue line under whichever item the cursor happens to be over. */
 .seo-static .nav-links a::after { display: block; }
+.nav-dd-panel a::after,
+.seo-static .nav-dd-panel a::after { display: none !important; }
 
 /* ── TEAM CARD EMAIL ────────────────────────────────────────────
    Sits between the role and the bio. Muted until hover so it reads
@@ -3297,3 +3301,35 @@ body { letter-spacing: 0.01em; }
 @media (max-width: 860px) {
   .nav-dd-panel { display: none; }
 }
+
+/* ── CARD OUTLINE LIGHTING · SITE-WIDE ──────────────────────────
+   The home page bento grid lights one card at a time in a brand
+   colour. card-glow.js now drives every card grid on the site, so
+   the outline colours and the lit state live here rather than
+   being bolted onto .feature-card alone.
+
+   The colour is assigned per card by the script (cycling primary /
+   secondary / secondary-alt) unless the markup already picked one. */
+[data-glow="primary"]      { --card-glow: #5d6dff; --card-glow-rgb: 93, 109, 255; }
+[data-glow="secondary"]    { --card-glow: #8eb8ff; --card-glow-rgb: 142, 184, 255; }
+[data-glow="secondary-alt"]{ --card-glow: #43a4ff; --card-glow-rgb: 67, 164, 255; }
+
+.seo-feature-card,
+.value-card,
+.team-card {
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.seo-feature-card.is-lit, .seo-feature-card:hover,
+.value-card.is-lit,       .value-card:hover,
+.team-card.is-lit,        .team-card:hover {
+  border-color: var(--card-glow, var(--accent-2));
+  box-shadow:
+    0 0 0 1px var(--card-glow, var(--accent-2)),
+    0 0 24px rgba(var(--card-glow-rgb, 142, 184, 255), 0.28);
+}
+
+/* ── CARD HEADINGS IN THE BIZZBOT BLUE ──────────────────────────── */
+.seo-feature-card h3,
+.value-card h3,
+.team-card h3 { color: #8fb8fd; }
