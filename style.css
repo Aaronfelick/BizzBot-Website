@@ -3058,7 +3058,8 @@ body { letter-spacing: 0.01em; }
    The animated gradient underline was switched off for .seo-static
    pages, so Operations AI, Solutions and the landing pages had no
    hover/active indicator. Restore it — the markup is identical, it
-   was only ever hidden by CSS. */
+   was only ever hidden by CSS.
+
    Dropdown panel links are excluded: inside a panel the underline reads as
    a stray blue line under whichever item the cursor happens to be over. */
 .seo-static .nav-links a::after { display: block; }
@@ -3111,9 +3112,13 @@ body { letter-spacing: 0.01em; }
    (the nearest positioned ancestor), so .intro-inner's overflow:hidden
    does not clip it. Horizontal centring uses left/right insets rather
    than a transform, because the intro animation owns `transform` and
-   would overwrite it. */
+   would overwrite it.
+
+   Scoped to .intro-sticky: this must only ever apply to the hero CTA row.
+   A section CTA further down the page uses .section-actions and stays in
+   normal flow, so it can never be lifted on top of the copy around it. */
 @media (max-width: 768px) {
-  .intro-actions {
+  .intro-sticky .intro-actions {
     position: absolute;
     left: 1rem;
     right: 1rem;
@@ -3124,6 +3129,24 @@ body { letter-spacing: 0.01em; }
   }
   /* The headline now centres on its own. */
   .intro-inner { justify-content: center; }
+}
+
+/* ── SECTION CTA ROW ────────────────────────────────────────────
+   The button that closes a chapter. This used to borrow .intro-actions,
+   which meant it inherited the hero's entry animation and, on a phone,
+   the hero's absolute bottom-pinning - so it floated over the cards and
+   copy above it. It owns its layout now. */
+.section-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .section-actions { margin-top: 2rem; }
+  .section-actions .btn-primary { width: min(430px, 100%); }
 }
 
 /* ══════════════════════════════════════════════════════════════════
