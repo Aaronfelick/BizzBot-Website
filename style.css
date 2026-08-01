@@ -3373,20 +3373,39 @@ body { letter-spacing: 0.01em; }
 .intro-title {
   --tr-duration: 0.5s;
   --tr-stagger: 0.03s;
+  /* Horizontal breathing room for the clip below. */
+  --tr-bleed: 0.12em;
 }
 
 .intro-title > span.tr-line {
   position: relative;
-  /* The travel distance is one line box, and the caps are shorter
-     than that, so glyphs clear this edge fully before the clip. */
+  /* Vertically the travel distance is one line box, and the caps are
+     shorter than that, so glyphs clear this edge fully before the clip.
+
+     Horizontally the clip has to be given room. The headline is set on
+     negative tracking, which is applied after the last character too and
+     so pulls its box in tighter than the glyph actually draws; the
+     stroked line adds half a stroke width on top. Left flush, the clip
+     shaves the final letter -- the R of KNOWS YOUR was losing its edge.
+     Padding widens the clip box and an equal negative margin pulls it
+     back, so the ink gets room and the text does not move at all. */
   overflow: hidden;
+  padding-left: var(--tr-bleed);
+  padding-right: var(--tr-bleed);
+  margin-left: calc(var(--tr-bleed) * -1);
+  margin-right: calc(var(--tr-bleed) * -1);
 }
 
 .tr-layer { display: block; }
 
 .tr-layer-in {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  /* Inset by the bleed so this sits on the content box, exactly over the
+     layer it is replacing, rather than on the widened padding box. */
+  left: var(--tr-bleed);
+  right: var(--tr-bleed);
 }
 
 .tr-char {
