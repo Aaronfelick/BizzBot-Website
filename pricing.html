@@ -144,7 +144,7 @@ Bizz<span>Bot</span>
 <div class="section-inner" style="text-align:center;">
 <span class="section-tag">Pricing</span>
 <h1 class="page-title">Simple, transparent <em>pricing</em></h1>
-<p class="section-sub" style="margin: 0 auto;">No hidden fees. No long contracts. Cancel anytime.</p>
+<p class="section-sub" style="margin: 0 auto;">Start with a 7-day free trial — no credit card required. No hidden fees. No long contracts. Cancel anytime.</p>
 <div class="pricing-toggle">
 <button class="toggle-btn active" id="tog-monthly" onclick="togglePricing('monthly')">Monthly</button>
 <button class="toggle-btn" id="tog-annual" onclick="togglePricing('annual')">Annual <span class="save-note">upfront savings</span></button>
@@ -164,7 +164,7 @@ Bizz<span>Bot</span>
 <div class="billing-detail" id="detail-starter">Launch monthly price.</div>
 <ul class="plan-features"><li>1 chatbot</li><li>Up to 500 conversations/month</li><li>English + Arabic</li><li>Custom branding &amp; colours</li><li>Knowledge base up to 7,000 words</li><li>Email support</li><li>48-72 hour setup</li></ul>
 <div class="card-setup-fee">+ <s>AED 499</s> AED 200 one-time setup <span>· waived if paid annually</span></div>
-<div class="plan-cta"><span class="plan-soon">Coming Soon!</span><a class="plan-waitlist" href="contact.html">Join the waitlist &rarr;</a></div>
+<div class="plan-cta"><span class="plan-soon">Coming Soon!</span><a class="plan-cta-link" href="contact.html">Start your free trial &rarr;</a></div>
 </div>
 <div class="pricing-card featured" data-reveal="">
 <div class="popular-badge">Most popular</div>
@@ -177,7 +177,7 @@ Bizz<span>Bot</span>
 <div class="billing-detail" id="detail-growth">Launch monthly price.</div>
 <ul class="plan-features"><li>1 chatbot</li><li>Up to 2,000 conversations/month</li><li>English + Arabic</li><li>Custom branding &amp; colours</li><li>Knowledge base up to 30,000 words</li><li>Website integration</li><li>WhatsApp channel</li><li>24-hour updates</li><li>Priority email support</li></ul>
 <div class="card-setup-fee">+ <s>AED 499</s> AED 200 one-time setup <span>· waived if paid annually</span></div>
-<div class="plan-cta"><span class="plan-soon">Coming Soon!</span><a class="plan-waitlist" href="contact.html">Join the waitlist &rarr;</a></div>
+<div class="plan-cta"><span class="plan-soon">Coming Soon!</span><a class="plan-cta-link" href="contact.html">Start your free trial &rarr;</a></div>
 </div>
 <div class="pricing-card" data-reveal="">
 <div class="plan-name">Enterprise</div>
@@ -192,7 +192,7 @@ Bizz<span>Bot</span>
 <div class="plan-cta"><button class="btn-secondary" onclick="window.location.href='contact.html'" style="width:100%;">Contact us</button></div>
 </div>
 </div>
-<div class="setup-fee-note">One-time setup fee, now discounted from <s>AED 499</s> to <strong>AED 200</strong> on all plans — and waived entirely for annual subscribers.</div>
+<div class="setup-fee-note">One-time setup fee, now discounted from <s>AED 499</s> to <strong>AED 200</strong> on all plans — and waived entirely for annual subscribers. The 7-day trial is free: the setup fee only applies if you decide to continue.</div>
 <div class="ops-band" data-reveal="">
 <div>
 <span class="ops-band-tag">Operations AI · Early access</span>
@@ -316,7 +316,7 @@ function toggleMenu() {
 // ── PRICING TOGGLE ──
 const prices = {
   monthly: { starter:'249', growth:'549', enterprise:'1,199', starterOriginal:'AED 299', growthOriginal:'AED 699', enterpriseOriginal:'AED 1,499', starterSave:'Save AED 50', growthSave:'Save AED 150', enterpriseSave:'Save AED 300' },
-  annual: { starter:'199', growth:'499', enterprise:'1,199', starterOriginal:'', growthOriginal:'', enterpriseOriginal:'', starterSave:'Save 20% · AED 2,388 upfront', growthSave:'Save 9% · AED 5,988 upfront', enterpriseSave:'Save AED 300' }
+  annual: { starter:'199', growth:'499', enterprise:'1,199', starterOriginal:'', growthOriginal:'', enterpriseOriginal:'', starterSave:'Save 20% · AED 2,388 upfront', growthSave:'Save 9% · AED 5,988 upfront', enterpriseSave:'Setup fee waived' }
 };
 function togglePricing(type) {
   const m=document.getElementById('tog-monthly'), a=document.getElementById('tog-annual');

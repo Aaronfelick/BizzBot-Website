@@ -3476,8 +3476,9 @@ body { letter-spacing: 0.01em; }
    to press. It keeps the button's footprint so the cards keep
    their proportions and still line up along the bottom.
 
-   The waitlist link under it is the live path -- the plan can't be
-   started, but the visitor still has somewhere to go.
+   The trial link under it is the live path: the subscription cannot be
+   bought yet, but the 7-day trial takes no payment, so that part is real
+   and stays clickable.
    ──────────────────────────────────────────────────────────────── */
 .plan-cta {
   display: flex;
@@ -3504,7 +3505,7 @@ body { letter-spacing: 0.01em; }
   user-select: none;
 }
 
-.plan-waitlist {
+.plan-cta-link {
   display: inline-block;
   /* This is the only live control left on these cards, so it gets a
      tap target close to the 44px guidance rather than the ~15px a
@@ -3520,15 +3521,15 @@ body { letter-spacing: 0.01em; }
   transition: opacity 0.2s ease;
 }
 
-.plan-waitlist:hover { opacity: 0.75; }
+.plan-cta-link:hover { opacity: 0.75; }
 
-/* Enterprise has no waitlist line under its button. Reserving that line's
+/* Enterprise has no trial line under its button. Reserving that line's
    height keeps all three CTAs on one line while the cards stay flush at the
    bottom -- otherwise the two Coming Soon pills float above it. The spacer
    copies the link's own metrics rather than hard-coding a height, so the two
    cannot drift apart. Browsers without :has() simply skip it and fall back
    to bottom alignment. */
-.plan-cta:not(:has(.plan-waitlist))::after {
+.plan-cta:not(:has(.plan-cta-link))::after {
   content: '\00a0';
   display: block;
   visibility: hidden;
