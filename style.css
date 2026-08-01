@@ -3364,14 +3364,15 @@ body { letter-spacing: 0.01em; }
    by character. text-roll.js builds the layers and drives the
    trigger, so nothing below applies until it has run.
 
-   Delays are composed rather than written out per character: the
-   line contributes --tr-line and each character its --tr-i, so a
-   roll cascades down the headline and left to right across it.
+   Each line rolls on its own, from a hover, a tap, or the cycle in
+   text-roll.js that walks down the headline. Only the stagger across
+   a line's characters lives here; the order the lines go in is timed
+   in JS, because each line has to wait for the one above it to land
+   and how long that takes depends on its length.
    ──────────────────────────────────────────────────────────────── */
 .intro-title {
   --tr-duration: 0.5s;
   --tr-stagger: 0.03s;
-  --tr-line-step: 0.09s;
 }
 
 .intro-title > span.tr-line {
@@ -3395,19 +3396,17 @@ body { letter-spacing: 0.01em; }
   vertical-align: top;
   transform: translateY(0);
   transition: transform var(--tr-duration) cubic-bezier(0.42, 0, 0.58, 1);
-  transition-delay: calc(
-    var(--tr-line, 0) * var(--tr-line-step) + var(--tr-i, 0) * var(--tr-stagger)
-  );
+  transition-delay: calc(var(--tr-i, 0) * var(--tr-stagger));
 }
 
 .tr-layer-in .tr-char { transform: translateY(100%); }
 
-.intro-title.is-rolling .tr-layer-out .tr-char { transform: translateY(-100%); }
-.intro-title.is-rolling .tr-layer-in .tr-char { transform: translateY(0); }
+.tr-line.is-rolling .tr-layer-out .tr-char { transform: translateY(-100%); }
+.tr-line.is-rolling .tr-layer-in .tr-char { transform: translateY(0); }
 
 /* Used for a single frame to re-arm the roll without animating the
    layers back down. See the reset in text-roll.js. */
-.intro-title.tr-instant .tr-char { transition: none; }
+.tr-line.tr-instant .tr-char { transition: none; }
 
 /* ── SMOOTH CARET ───────────────────────────────────────────────
    Ported from Skiper UI "skiper106". smooth-caret.js wraps an

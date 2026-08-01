@@ -10,23 +10,34 @@
    exactly as it started -- that is what lets it replay forever from a single
    pair of layers, with no crossfade or text swap.
 
-   The original fires on hover alone, which leaves phones out. This one also
-   plays itself once when the hero first settles, and replays on tap.
+   Each line owns its roll. Hovering or tapping one line rolls that line and
+   nothing else, and the headline also cycles by itself: after a pause the
+   first line rolls, each following line waits for the one above it to land,
+   and once the last has finished the pause starts again. The cascade is
+   sequenced here rather than by staggered CSS delays, because "start when
+   the line above has finished" depends on how many characters that line
+   happens to have.
+
+   The cycle stops whenever nobody can see it -- hero scrolled away, or tab
+   in the background -- so it is not animating against a phone battery for a
+   headline that is off screen.
    ========================================================================== */
 (function () {
   'use strict';
 
   var TITLE = '.intro-title';
 
-  /* Kept in step with the timings in style.css. The reset that re-arms the
-     roll has to land after the last character has finished travelling, and
-     the last character is the one furthest down the headline. */
+  /* Kept in step with the timings in style.css. A line is done when its last
+     character has finished travelling, so its length sets its duration. */
   var DURATION_MS = 500;
   var STAGGER_MS = 30;
-  var LINE_STEP_MS = 90;
+  var RESET_BUFFER_MS = 40;
+
+  /* Gap between one full pass down the headline and the next. */
+  var PAUSE_MS = 3000;
 
   /* The lines already fade up on load (introLineIn). Rolling on top of that
-     reads as two animations fighting, so the first roll waits for it. */
+     reads as two animations fighting, so the cycle waits for it. */
   var ENTRANCE_MS = 1200;
   var SETTLE_MS = 300;
   var PRELOADER_BAILOUT_MS = 4000;
@@ -119,96 +130,165 @@
     line.style.letterSpacing = ((tracking + perChar) / fontSize).toFixed(5) + 'em';
   }
 
+  /* One line, responsible for its own roll. Anything that wants to roll it
+     hands over a callback and is told when the line is idle again, which is
+     what lets the cascade wait on a line the visitor happens to be hovering
+     instead of rolling it a second time on top. */
+  function createLine(el, charCount) {
+    var duration = DURATION_MS +
+      Math.max(0, charCount - 1) * STAGGER_MS + RESET_BUFFER_MS;
+
+    var busy = false;
+    var waiting = [];
+
+    function settle() {
+      /* Dropping the class would roll the line back down, which reads as a
+         rewind. Freezing transitions first snaps the layers back to their
+         start instead -- invisible, because both copies are identical -- so
+         the next roll travels upward again. */
+      el.classList.add('tr-instant');
+      el.classList.remove('is-rolling');
+      void el.offsetWidth;
+      el.classList.remove('tr-instant');
+
+      busy = false;
+
+      var queued = waiting.slice();
+      waiting.length = 0;
+      for (var i = 0; i < queued.length; i++) queued[i]();
+    }
+
+    function roll(done) {
+      if (busy) {
+        /* Already rolling for some other reason. Let that finish and count
+           it, rather than stacking a second roll on the same line. */
+        if (done) waiting.push(done);
+        return;
+      }
+
+      busy = true;
+      el.classList.add('is-rolling');
+
+      window.setTimeout(function () {
+        settle();
+        if (done) done();
+      }, duration);
+    }
+
+    return { el: el, roll: roll };
+  }
+
   function init() {
     var title = document.querySelector(TITLE);
     if (!title) return;
 
     /* Nothing here is essential to reading the headline, so a visitor who
-       asked for less motion keeps the original markup untouched. */
+       asked for less motion keeps the original markup untouched -- and no
+       cycle running behind it. */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var lines = [].slice.call(title.children).filter(function (node) {
+    var source = [].slice.call(title.children).filter(function (node) {
       return node.tagName === 'SPAN';
     });
-    if (!lines.length) return;
+    if (!source.length) return;
 
-    var longestLine = 0;
-
-    lines.forEach(function (line, index) {
+    var lines = source.map(function (el) {
       /* Has to happen while the line still holds its original text. */
-      var naturalWidth = measureNatural(line);
+      var naturalWidth = measureNatural(el);
 
       var counter = { i: 0 };
-      var out = buildLayer(line, 'tr-layer tr-layer-out', counter);
+      var out = buildLayer(el, 'tr-layer tr-layer-out', counter);
       /* Both layers are split from the same source, so the counter restarts
          and the two copies of a character share one delay. */
-      var incoming = buildLayer(line, 'tr-layer tr-layer-in', { i: 0 });
+      var incoming = buildLayer(el, 'tr-layer tr-layer-in', { i: 0 });
 
-      longestLine = Math.max(longestLine, counter.i);
+      el.textContent = '';
+      el.className = el.className ? el.className + ' tr-line' : 'tr-line';
+      el.appendChild(out);
+      el.appendChild(incoming);
 
-      line.textContent = '';
-      line.className = line.className ? line.className + ' tr-line' : 'tr-line';
-      line.style.setProperty('--tr-line', index);
-      line.appendChild(out);
-      line.appendChild(incoming);
+      var chars = out.querySelectorAll('.tr-char');
+      compensateKerning(el, chars, naturalWidth);
 
-      compensateKerning(line, out.querySelectorAll('.tr-char'), naturalWidth);
+      return createLine(el, chars.length);
     });
 
-    var cycleMs = DURATION_MS +
-      (lines.length - 1) * LINE_STEP_MS +
-      Math.max(0, longestLine - 1) * STAGGER_MS + 40;
+    /* Each line box hugs its own glyphs, so these land on one line only. */
+    lines.forEach(function (line) {
+      function trigger() { line.roll(); }
+      line.el.addEventListener('pointerenter', trigger);
+      line.el.addEventListener('click', trigger);
+    });
 
-    var isRolling = false;
-
-    function play() {
-      if (isRolling) return;
-      isRolling = true;
-      title.classList.add('is-rolling');
-
-      window.setTimeout(function () {
-        /* Dropping the class would roll everything back down, which reads as
-           a rewind. Freezing transitions first snaps the layers back to their
-           start instead -- invisible, because both copies are identical -- so
-           the next roll travels upward again. */
-        title.classList.add('tr-instant');
-        title.classList.remove('is-rolling');
-        void title.offsetWidth;
-        title.classList.remove('tr-instant');
-        isRolling = false;
-      }, cycleMs);
-    }
-
-    /* pointerenter covers the mouse; click covers taps, where there is no
-       hover to enter. On a touchscreen both fire for one tap, and the
-       in-flight guard collapses them into a single roll. */
-    title.addEventListener('pointerenter', play);
-    title.addEventListener('click', play);
-
-    autoplay(title, play);
+    startCycle(title, lines);
   }
 
-  /* The hero sits above the fold but behind the brand preloader, and its
-     fade-up starts the moment the CSS lands rather than when the overlay
-     lifts. The first roll therefore waits for the overlay to go, for the
-     fade-up to have run its course, and for the hero to actually be on
-     screen -- whichever of those resolves last. */
-  function autoplay(title, play) {
-    var startedAt = window.performance ? performance.now() : Date.now();
+  function startCycle(title, lines) {
+    var timer = null;
+    var running = false;
+    var armed = false;
+    var onScreen = true;
+    var pageVisible = !document.hidden;
 
-    afterPreloader(function () {
-      var elapsed = (window.performance ? performance.now() : Date.now()) - startedAt;
-      var wait = Math.max(ENTRANCE_MS - elapsed, SETTLE_MS);
+    function step(index) {
+      if (!running) return;
 
-      whenVisible(title, function () {
-        /* A background tab reports the hero as on screen but paints nothing,
-           so rolling there would spend the one automatic play on an audience
-           that cannot see it. Hold it until the tab is actually foregrounded. */
-        whenPageVisible(function () {
-          window.setTimeout(play, wait);
-        });
-      });
+      if (index >= lines.length) {
+        timer = window.setTimeout(function () { step(0); }, PAUSE_MS);
+        return;
+      }
+
+      /* The next line starts only once this one has landed. */
+      lines[index].roll(function () { step(index + 1); });
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      timer = window.setTimeout(function () { step(0); }, PAUSE_MS);
+    }
+
+    function stop() {
+      running = false;
+      if (timer) window.clearTimeout(timer);
+      timer = null;
+      /* A roll already in flight still settles itself, so nothing is left
+         stranded mid-travel. */
+    }
+
+    function sync() {
+      if (armed && onScreen && pageVisible) start();
+      else stop();
+    }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        onScreen = entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0 }).observe(title);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      pageVisible = !document.hidden;
+      sync();
     });
+
+    /* The hero sits above the fold but behind the brand preloader, and its
+       fade-up starts the moment the CSS lands rather than when the overlay
+       lifts. The cycle therefore waits for the overlay to go and for the
+       fade-up to have run its course. */
+    var startedAt = now();
+    afterPreloader(function () {
+      var wait = Math.max(ENTRANCE_MS - (now() - startedAt), SETTLE_MS);
+      window.setTimeout(function () {
+        armed = true;
+        sync();
+      }, wait);
+    });
+  }
+
+  function now() {
+    return window.performance ? performance.now() : Date.now();
   }
 
   function afterPreloader(done) {
@@ -237,34 +317,6 @@
       observer.disconnect();
       fire();
     }, PRELOADER_BAILOUT_MS);
-  }
-
-  function whenPageVisible(done) {
-    if (!document.hidden) {
-      done();
-      return;
-    }
-
-    document.addEventListener('visibilitychange', function onChange() {
-      if (document.hidden) return;
-      document.removeEventListener('visibilitychange', onChange);
-      done();
-    });
-  }
-
-  function whenVisible(element, done) {
-    if (!('IntersectionObserver' in window)) {
-      done();
-      return;
-    }
-
-    var observer = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      observer.disconnect();
-      done();
-    }, { threshold: 0.25 });
-
-    observer.observe(element);
   }
 
   if (document.readyState === 'loading') {
