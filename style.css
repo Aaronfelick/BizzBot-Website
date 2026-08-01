@@ -3469,3 +3469,71 @@ body { letter-spacing: 0.01em; }
 @keyframes scBlink {
   50% { opacity: 0; }
 }
+
+/* ── PLAN NOT YET ON SALE ───────────────────────────────────────
+   Starter and Growth cannot be bought yet, so their CTA is a flat
+   label rather than a button: no pointer cursor, no hover, nothing
+   to press. It keeps the button's footprint so the cards keep
+   their proportions and still line up along the bottom.
+
+   The waitlist link under it is the live path -- the plan can't be
+   started, but the visitor still has somewhere to go.
+   ──────────────────────────────────────────────────────────────── */
+.plan-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* The link below carries its own padding for a thumb-sized tap
+     target, so the spacing comes from that rather than a gap here. */
+  gap: 0;
+}
+
+.plan-soon {
+  width: 100%;
+  /* Matches .btn-secondary's box so nothing shifts. */
+  padding: 13px 28px;
+  border-radius: 999px;
+  border: 1.5px dashed var(--line-strong);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--faint);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  text-align: center;
+  cursor: default;
+  user-select: none;
+}
+
+.plan-waitlist {
+  display: inline-block;
+  /* This is the only live control left on these cards, so it gets a
+     tap target close to the 44px guidance rather than the ~15px a
+     bare line of text would give a thumb. */
+  padding: 14px 16px;
+  color: var(--accent-2);
+  font-size: 13px;
+  font-weight: 500;
+  /* Stated rather than left to `normal` so the spacer below can match it
+     exactly; the two have to resolve to the same height or the CTAs drift. */
+  line-height: 1.2;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.plan-waitlist:hover { opacity: 0.75; }
+
+/* Enterprise has no waitlist line under its button. Reserving that line's
+   height keeps all three CTAs on one line while the cards stay flush at the
+   bottom -- otherwise the two Coming Soon pills float above it. The spacer
+   copies the link's own metrics rather than hard-coding a height, so the two
+   cannot drift apart. Browsers without :has() simply skip it and fall back
+   to bottom alignment. */
+.plan-cta:not(:has(.plan-waitlist))::after {
+  content: '\00a0';
+  display: block;
+  visibility: hidden;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+}
