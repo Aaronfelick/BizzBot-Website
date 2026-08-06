@@ -30,7 +30,7 @@
 <link as="font" crossorigin="" href="fonts/Nohemi-SemiBold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Bold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-ExtraBold.woff2" rel="preload" type="font/woff2"/>
-<link href="style.css?v=20260729-v23" rel="stylesheet"/>
+<link href="style.css?v=20260806-v27" rel="stylesheet"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -257,6 +257,7 @@
 }</script>
 </head>
 <body class=" is-preloading">
+<div aria-hidden="true" id="robotStage"><canvas id="robotCanvas"></canvas></div>
 <div aria-label="Loading BizzBot" class="brand-preloader" id="brandPreloader" role="status"><img alt="BizzBot" fetchpriority="high" src="assets/Bizzbot_logo.png"/></div>
 
 
@@ -565,4 +566,5 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 </script>
 <script src="nav.js" defer></script><script src="card-glow.js" defer></script>
+<script src="https://unpkg.com/three@0.148.0/build/three.min.js"></script><script src="robot-rounded-box.js"></script><script src="robot.js?v=14"></script>
 </body></html>

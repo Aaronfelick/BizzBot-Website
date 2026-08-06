@@ -3556,3 +3556,35 @@ body { letter-spacing: 0.01em; }
   font-weight: 500;
   line-height: 1.2;
 }
+
+/* ── 3D hero robot (Three.js, robot.js) ──
+   On the homepage this is a viewport-fixed layer, since robot.js flies it
+   between scroll-linked slots there. On every other page it's parked in a
+   single spot and should scroll away with the page instead of chasing the
+   viewport -- so it's positioned relative to the document there (one
+   viewport-height tall, pinned to the top), and simply scrolls out of view
+   as the user scrolls down, then is there again when they scroll back up.
+   Sits above the page background but under the nav/menu, and never
+   intercepts clicks. Desktop only for now -- hidden below tablet width
+   until the mobile pose is tuned. */
+#robotStage {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0; /* robot.js takes over and fades this in/out itself every frame */
+}
+body:not(.on-home) #robotStage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  height: 100vh;
+}
+#robotCanvas { width: 100%; height: 100%; display: block; }
+
+@media (max-width: 900px) {
+  #robotStage { display: none; }
+}
+

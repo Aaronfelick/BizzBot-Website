@@ -31,7 +31,7 @@
 <link as="font" crossorigin="" href="fonts/Nohemi-SemiBold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-Bold.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="fonts/Nohemi-ExtraBold.woff2" rel="preload" type="font/woff2"/>
-<link href="style.css?v=20260801-v26" rel="stylesheet"/>
+<link href="style.css?v=20260806-v27" rel="stylesheet"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -161,6 +161,7 @@ Bizz<span>Bot</span>
 </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="operations-ai.html">Operations AI</a><button type="button" class="m-acc-btn" aria-expanded="false" aria-controls="mChatbots">Chatbots<span class="m-acc-caret" aria-hidden="true"></span></button><div class="m-acc-panel" id="mChatbots"><div><span class="m-acc-label">Product</span><a href="solutions.html">Solutions overview</a><a href="how-it-works.html">How It Works</a><a href="chatbot-integrations.html">Integrations</a><span class="m-acc-label">Industries</span><a href="ai-customer-support-chatbot.html">Customer support</a><a href="ai-lead-generation-chatbot.html">Lead generation</a><a href="ecommerce-chatbot.html">E-commerce</a><a href="real-estate-chatbot.html">Real estate</a><a href="custom-ai-chatbot-dubai.html">Custom build, Dubai</a></div></div><a href="pricing.html">Pricing</a><button type="button" class="m-acc-btn" aria-expanded="false" aria-controls="mCompany">Company<span class="m-acc-caret" aria-hidden="true"></span></button><div class="m-acc-panel" id="mCompany"><div><a href="about.html">About Us</a><a href="resources.html">Resources</a><a href="faq.html">FAQ</a></div></div><a href="contact.html">Get Started</a></div>
+<div aria-hidden="true" id="robotStage"><canvas id="robotCanvas"></canvas></div>
 <div class="page active" id="page-home">
 <!-- ── CHAPTER 00 · FULL-SCREEN INTRO ── -->
 <header class="intro-hero" id="introHero">
@@ -282,7 +283,7 @@ Bizz<span>Bot</span>
 </div>
 </section>
 <!-- ── CHAPTER 05 · PROCESS ── -->
-<section class="editorial-section">
+<section class="editorial-section" id="processSection">
 <div class="section-inner">
 <div class="section-head" data-reveal="">
 <span class="chapter-index">05</span>
@@ -782,4 +783,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 })();
 </script><script src="nav.js" defer></script><script src="card-glow.js" defer></script><script src="text-roll.js?v=20260730-v2" defer></script>
+<script src="https://unpkg.com/three@0.148.0/build/three.min.js"></script>
+<script src="robot-rounded-box.js"></script>
+<script src="robot.js?v=14"></script>
 </body></html>
