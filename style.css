@@ -3565,8 +3565,10 @@ body { letter-spacing: 0.01em; }
    viewport-height tall, pinned to the top), and simply scrolls out of view
    as the user scrolls down, then is there again when they scroll back up.
    Sits above the page background but under the nav/menu, and never
-   intercepts clicks. Desktop only for now -- hidden below tablet width
-   until the mobile pose is tuned. */
+   intercepts clicks.
+   Below tablet width the robot is hidden everywhere except the homepage
+   hero (robot.js handles the fade there); every other page stays
+   robot-free on mobile. */
 #robotStage {
   position: fixed;
   inset: 0;
@@ -3586,5 +3588,6 @@ body:not(.on-home) #robotStage {
 
 @media (max-width: 900px) {
   #robotStage { display: none; }
+  body.on-home #robotStage { display: block; }
 }
 

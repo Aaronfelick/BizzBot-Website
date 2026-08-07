@@ -299,11 +299,31 @@
     const FINAL   = { x:  3.87, y:  1.32, s: 0.32, ry: -0.5 }; // top-right, smaller — parked from panel 02 onward
     const HERO_IDLE_DELAY    = 1.5;
     const HERO_IDLE_DURATION = 0.9;
-    const MOBILE_POSE = { x: 0.05, y: -0.88, s: 0.42, ry: 0.08 };
+    const MOBILE_POSE = { x: 0.05, y: -0.88, s: 0.42, ry: 0.08 }; // placeholder pose for pages where mobile stays hidden (opacity 0, so it never actually shows)
+    // Mobile hero: the robot just wanders between these two corners for as
+    // long as the hero is on screen — see resolvePose().
+    const MOBILE_A = { x: -0.9, y:  1.0,  s: 0.20, ry:  0.4 }; // upper-left
+    const MOBILE_B = { x:  0.8, y: -1.12, s: 0.20, ry: -0.4 }; // lower-right
+    const MOBILE_CYCLE = 6.0; // seconds for a full A -> B -> A loop (~3s each way)
 
     const lerp = THREE.MathUtils.lerp;
     const clamp01 = function (v) { return Math.min(1, Math.max(0, v)); };
     const easeOut = function (v) { return 1 - Math.pow(1 - v, 3); };
+
+    function lerpPose(a, b, tt) {
+      return {
+        x: lerp(a.x, b.x, tt), y: lerp(a.y, b.y, tt),
+        s: lerp(a.s, b.s, tt), ry: lerp(a.ry, b.ry, tt)
+      };
+    }
+
+    // 0 -> 1 -> 0 triangle wave, smoothed, so position eases in and out at
+    // each corner instead of moving at a constant speed and snapping.
+    function pingPong(t, period) {
+      const cyclePos = (t % period) / (period / 2); // 0..2
+      const tri = cyclePos <= 1 ? cyclePos : 2 - cyclePos; // 0->1->0
+      return tri * tri * (3 - 2 * tri); // smoothstep
+    }
 
     const introHeroEl     = document.getElementById('introHero');
     const storySequenceEl = document.getElementById('storySequence');
@@ -315,10 +335,26 @@
     const isHomePage = document.body.classList.contains('on-home');
 
     // Hard, instant zone lookup — { pose, opacity } where opacity is always
-    // exactly 0 or 1, never a fraction. Depends only on current scroll math,
-    // so it's naturally history-free.
-    function resolvePose(isMobile) {
-      if (isMobile) return { pose: MOBILE_POSE, opacity: 1 };
+    // exactly 0 or 1, never a fraction (except the two gradual cases noted
+    // inline below). Depends only on current scroll math, so it's naturally
+    // history-free.
+    function resolvePose(isMobile, t) {
+      if (isMobile) {
+        // Mobile: the robot only ever appears on the homepage hero — hidden
+        // everywhere else, on every other page, full stop.
+        if (!isHomePage) return { pose: MOBILE_POSE, opacity: 0 };
+
+        // While the hero is on screen it just wanders between two corners
+        // forever. Opacity fades out gradually (not a hard cut) as the user
+        // scrolls away, and back in if they scroll back up — a direct
+        // function of scroll position, so "come back to the hero" always
+        // means "still flying," regardless of path.
+        const heroRect = introHeroEl ? introHeroEl.getBoundingClientRect() : null;
+        const heroProgress = heroRect ? clamp01(-heroRect.top / window.innerHeight) : 1;
+        const opacity = clamp01(1 - heroProgress / 0.5);
+        const swing = pingPong(t, MOBILE_CYCLE);
+        return { pose: lerpPose(MOBILE_A, MOBILE_B, swing), opacity: opacity };
+      }
       if (!isHomePage) return { pose: FINAL, opacity: 1 };
 
       if (storySequenceEl) {
@@ -382,9 +418,9 @@
 
       const t = clock.getElapsedTime();
 
-      // Which slot the robot belongs in right now (disabled on mobile — stage scrolls with hero)
+      // Which slot the robot belongs in right now
       const isMobile = mq.matches;
-      const resolved = resolvePose(isMobile);
+      const resolved = resolvePose(isMobile, t);
       const k = resolved.pose;
 
       // Every slot change is a hard cut, set directly every frame so it's
@@ -404,9 +440,11 @@
       // pixel-identical whenever the same slot is active.
       const entry = easeOut(clamp01(t / 1.4));
       const aspectShift = camera.aspect / 1.6;
-      root.position.x = isMobile ? MOBILE_POSE.x : k.x * Math.min(aspectShift, 1.15);
-      root.position.y = isMobile ? MOBILE_POSE.y : k.y;
-      root.scale.setScalar((isMobile ? MOBILE_POSE.s : k.s) * entry);
+      // Mobile poses are already tuned in raw world units (portrait framing
+      // is much narrower), so they skip the desktop aspect-ratio multiplier.
+      root.position.x = isMobile ? k.x : k.x * Math.min(aspectShift, 1.15);
+      root.position.y = k.y;
+      root.scale.setScalar(k.s * entry);
 
       // Idle hover bob + gentle sway (robot inside root)
       const bob = Math.sin(t * 1.5) * 0.13;
