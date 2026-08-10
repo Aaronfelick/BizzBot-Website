@@ -259,6 +259,40 @@
       if (e.touches.length) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
+    // ── Click to say hi ──
+    // The canvas/stage stay pointer-events:none (so the robot never blocks
+    // clicks on the page underneath it) -- instead a small invisible hit
+    // target is tracked to wherever the robot currently is on screen each
+    // frame (see the bottom of animate()), sized to roughly match its
+    // current on-screen size. Clicking or tapping it pops a "HI" speech
+    // bubble and forces an immediate wave, on top of whatever the periodic
+    // wave cycle is doing.
+    const hit = document.createElement('div');
+    hit.id = 'robotHit';
+    hit.setAttribute('role', 'button');
+    hit.setAttribute('aria-label', 'Say hi to the BizzBot robot');
+    hit.tabIndex = 0;
+    stage.appendChild(hit);
+
+    const speech = document.createElement('div');
+    speech.id = 'robotSpeech';
+    speech.textContent = 'HI';
+    speech.setAttribute('aria-hidden', 'true');
+    stage.appendChild(speech);
+
+    let clickWaveStart = -10;
+    let speechHideAt = -1;
+    const hitWorldPos = new THREE.Vector3(); // reused each frame to avoid allocating
+    function sayHi() {
+      clickWaveStart = clock.getElapsedTime();
+      speechHideAt = clickWaveStart + 1.6;
+      speech.classList.add('show');
+    }
+    hit.addEventListener('click', sayHi);
+    hit.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sayHi(); }
+    });
+
     // ── Resize ──
     function resize() {
       const w = stage.clientWidth || window.innerWidth;
@@ -427,13 +461,15 @@
       // always exactly right for the current scroll position — except the
       // hero show/hide boundary, which gets a slow lerped fade instead of
       // popping instantly (the one bit of visible smoothing left).
+      let currentOpacity;
       if (resolved.fade) {
         heroFadeOpacity = lerp(heroFadeOpacity, resolved.opacity, 0.05); // ~0.8-1s
-        stage.style.opacity = String(heroFadeOpacity);
+        currentOpacity = heroFadeOpacity;
       } else {
         heroFadeOpacity = resolved.opacity; // stay in sync so re-entering the hero doesn't fade from a stale value
-        stage.style.opacity = String(resolved.opacity);
+        currentOpacity = resolved.opacity;
       }
+      stage.style.opacity = String(currentOpacity);
 
       // Entry pop-in on load is the only eased motion left; the slot
       // position/scale itself is set directly (no lerp) so it's always
@@ -465,9 +501,11 @@
       eyeL.scale.y = eyeScaleY;
       eyeR.scale.y = eyeScaleY;
 
-      // Waving right arm
+      // Waving right arm — periodic cycle, plus an immediate one on click
       const wavePhase = t % WAVE_PERIOD;
-      const waveEnv = envelope(wavePhase, 1.2, 3.4, 0.45, 0.45);
+      const periodicWaveEnv = envelope(wavePhase, 1.2, 3.4, 0.45, 0.45);
+      const clickWaveEnv = envelope(t - clickWaveStart, 0, 2.2, 0.35, 0.6);
+      const waveEnv = Math.max(periodicWaveEnv, clickWaveEnv);
       armR.rotation.z = armRestR + waveEnv * (2.45 + Math.sin(t * 11) * 0.28);
       armL.rotation.z = armRestL - Math.sin(t * 1.5 + 1) * 0.06;
 
@@ -502,6 +540,37 @@
       pool.scale.setScalar(1 - (bob + 0.13) * 0.5);
 
       renderer.render(scene, camera);
+
+      // Track the hit target + speech bubble to wherever the robot actually
+      // is on screen right now. Distance from camera to root never changes
+      // (root only ever moves in x/y), so pixels-per-world-unit is constant
+      // and the hit radius just scales with the robot's current scale.
+      const visible = currentOpacity > 0.05;
+      hit.style.pointerEvents = visible ? 'auto' : 'none';
+      if (visible) {
+        hitWorldPos.setFromMatrixPosition(root.matrixWorld);
+        hitWorldPos.project(camera);
+        const px = (hitWorldPos.x * 0.5 + 0.5) * stage.clientWidth;
+        const py = (1 - (hitWorldPos.y * 0.5 + 0.5)) * stage.clientHeight;
+        const pxPerWorldUnit = (stage.clientHeight / 2) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / camera.position.z;
+        const hitRadiusPx = Math.max(26, 1.3 * root.scale.x * pxPerWorldUnit);
+
+        hit.style.left = px + 'px';
+        hit.style.top = py + 'px';
+        hit.style.width = (hitRadiusPx * 2) + 'px';
+        hit.style.height = (hitRadiusPx * 2) + 'px';
+        hit.style.marginLeft = -hitRadiusPx + 'px';
+        hit.style.marginTop = -hitRadiusPx + 'px';
+
+        // Anchored up and to the right of the head, not centered above it.
+        speech.style.left = (px + hitRadiusPx * 0.6) + 'px';
+        speech.style.top = (py - hitRadiusPx * 1.8) + 'px';
+      }
+
+      if (speechHideAt > 0 && t > speechHideAt) {
+        speech.classList.remove('show');
+        speechHideAt = -1;
+      }
     }
     animate();
   }
